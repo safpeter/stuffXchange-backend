@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Builder
@@ -27,11 +27,15 @@ public class StuffProperty {
 
     private String currency;
 
+    private LocalDate date;
+
     @Column(columnDefinition = "text")
     private String description;
 
     @ManyToOne
     private User user;
+
+    private long mainPicture;
 
     @OneToMany(cascade=CascadeType.ALL)
     private List<Image> images;

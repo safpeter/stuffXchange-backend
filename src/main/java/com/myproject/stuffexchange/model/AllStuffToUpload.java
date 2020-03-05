@@ -1,15 +1,18 @@
 package com.myproject.stuffexchange.model;
 
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Blob;
+
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AllStuff {
-
+public class AllStuffToUpload {
 
     private long id;
 
@@ -17,7 +20,5 @@ public class AllStuff {
 
     private double price;
 
-    private long pictureId;
-
-    private byte[] mainPicture;
+    private String mainPicture;
 }

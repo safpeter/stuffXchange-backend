@@ -5,10 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import java.sql.Blob;
 
+@Component
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -25,4 +26,6 @@ public class Image {
 
     @Lob
     private byte[] image;
+
+
 }
