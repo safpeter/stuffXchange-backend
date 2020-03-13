@@ -2,16 +2,19 @@ package com.myproject.stuffexchange.model;
 
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import java.time.LocalDate;
 
-@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AllStuffToUpload {
+public class StuffDetail {
 
     private long id;
 
@@ -19,5 +22,8 @@ public class AllStuffToUpload {
 
     private double price;
 
-    private String mainPicture;
+    private LocalDate date;
+
+    private String description;
+
 }

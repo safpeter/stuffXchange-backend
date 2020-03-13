@@ -1,6 +1,7 @@
 package com.myproject.stuffexchange.controller;
 
 
+import com.myproject.stuffexchange.data.CountryAndCurrencyRepository;
 import com.myproject.stuffexchange.data.ImageRepository;
 import com.myproject.stuffexchange.data.StuffPropertyRepository;
 
@@ -8,7 +9,9 @@ import com.myproject.stuffexchange.model.*;
 import com.myproject.stuffexchange.service.ImageTransformService;
 import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -32,6 +35,9 @@ public class Controller {
     @Autowired
     ImageTransformService transformService;
 
+    @Autowired
+    CountryAndCurrencyRepository countryAndCurrencyRepository;
+
     @GetMapping(value = "/getallstuff")
     public @ResponseBody List<AllStuffToUpload> getAllStuff() {
         List<AllStuff> allStuffs =   stuffPropertyRepository.getAllStuff();
@@ -41,13 +47,14 @@ public class Controller {
                     .id(stuff.getId())
                     .name(stuff.getName())
                     .price(stuff.getPrice())
-                    .mainPicture(transformService.transformByteArraysToString(stuff))
+                    .mainPicture(transformService.getBytesFromStuff(stuff))
                     .build();
 
             stuffToUpload.add(toUpload);
         }
         return stuffToUpload;
     }
+
 
     @PostMapping(value = "/uploadstuff")
     public void uploadStuff(@ModelAttribute NewStuff newStuff) {
@@ -69,13 +76,36 @@ public class Controller {
         }
 
         imageRepository.saveAll(images);
-        System.out.println(images.get(0).getId());
         stuff.setMainPicture(images.get(0).getId());
         stuff.setImages(images);
         stuffPropertyRepository.saveAndFlush(stuff);
     }
 
+    @GetMapping("/stuffdetails/{id}")
+    public StuffDetail getStuffDetails(@PathVariable("id") long id){
+        return stuffPropertyRepository.getStuffDetails(id);
+    }
 
+    @GetMapping("/getimages/{id}")
+    public List<String> getImages(@PathVariable("id") long id){
+        StuffProperty stuffProperty = stuffPropertyRepository.getById(id);
+        List<Image> images =  imageRepository.getImagesByStuffProperty(stuffProperty);
+        List<String> strings = new ArrayList<>();
+        for (Image image : images) {
+           String string = transformService.getBytesFromImage(image);
+           strings.add(string);
+        }
+        return strings;
+    }
 
+    @GetMapping("/getcountries")
+    public List<String> getAllCountries(){
+        return countryAndCurrencyRepository.getAllCountries();
+    }
+
+    @GetMapping("/getcurrencies")
+    public List<String> getAllCurrencies(){
+        return countryAndCurrencyRepository.getAllCurrencyCode();
+    }
 
 }

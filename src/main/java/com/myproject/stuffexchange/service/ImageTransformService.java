@@ -1,6 +1,7 @@
 package com.myproject.stuffexchange.service;
 import com.myproject.stuffexchange.model.AllStuff;
 
+import com.myproject.stuffexchange.model.Image;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class ImageTransformService {
 
 
-    public byte[] getByteArray(MultipartFile file) throws IOException {
+    public byte[] getBytesFromMultipartFile(MultipartFile file) throws IOException {
         return  file.getBytes();
     }
 
@@ -24,7 +25,7 @@ public class ImageTransformService {
         List<byte[]> listOfByteArrays = new ArrayList<>();
         Arrays.stream(files).forEach(file -> {
             try {
-                byte[] bytes = getByteArray(file);
+                byte[] bytes = getBytesFromMultipartFile(file);
                 listOfByteArrays.add(bytes);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -33,10 +34,17 @@ public class ImageTransformService {
         return listOfByteArrays;
     }
 
-    public String transformByteArraysToString(AllStuff stuff) {
+    public String getBytesFromStuff(AllStuff stuff) {
         byte[] bytes = stuff.getMainPicture();
-        String string = "data:image/png;base64," +  Base64.getEncoder().encodeToString(bytes);
-        System.out.println(string);
-         return  string;
-        }
+        return  transformByteArrayToSting(bytes);
+     }
+
+     public String getBytesFromImage(Image image){
+        byte[] bytes = image.getImage();
+        return  transformByteArrayToSting(bytes);
+    }
+
+    public String transformByteArrayToSting(byte[] bytes){
+        return "data:image/png;base64," +  Base64.getEncoder().encodeToString(bytes);
+    }
 }
