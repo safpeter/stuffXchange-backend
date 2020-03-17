@@ -14,6 +14,8 @@ public class NewStuff {
 
     private double price;
 
+    private String currency;
+
     private String description;
 
     private MultipartFile[] images;

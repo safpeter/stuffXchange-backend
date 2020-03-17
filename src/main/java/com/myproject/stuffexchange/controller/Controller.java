@@ -7,21 +7,15 @@ import com.myproject.stuffexchange.data.StuffPropertyRepository;
 
 import com.myproject.stuffexchange.model.*;
 import com.myproject.stuffexchange.service.ImageTransformService;
-import org.apache.tomcat.util.http.parser.MediaType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartException;
-
-import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 
+@Slf4j
 @CrossOrigin
 @RestController
 public class Controller {
@@ -47,6 +41,7 @@ public class Controller {
                     .id(stuff.getId())
                     .name(stuff.getName())
                     .price(stuff.getPrice())
+                    .currency(stuff.getCurrency())
                     .mainPicture(transformService.getBytesFromStuff(stuff))
                     .build();
 
@@ -64,6 +59,7 @@ public class Controller {
                 .name(newStuff.getName())
                 .date(LocalDate.now())
                 .price(newStuff.getPrice())
+                .currency(newStuff.getCurrency())
                 .description(newStuff.getDescription())
                 .build();
 
@@ -107,5 +103,6 @@ public class Controller {
     public List<String> getAllCurrencies(){
         return countryAndCurrencyRepository.getAllCurrencyCode();
     }
+
 
 }

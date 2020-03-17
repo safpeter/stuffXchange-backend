@@ -12,10 +12,10 @@ import java.util.Set;
 
 public interface StuffPropertyRepository extends JpaRepository<StuffProperty,Long> {
 
-    @Query("select new com.myproject.stuffexchange.model.AllStuff(c.id, c.name,c.price,c.mainPicture,i.image) from StuffProperty c left JOIN Image i ON c.mainPicture=i.id")
+    @Query("select new com.myproject.stuffexchange.model.AllStuff(c.id, c.name,c.price,c.currency,c.mainPicture,i.image) from StuffProperty c left JOIN Image i ON c.mainPicture=i.id")
     List<AllStuff> getAllStuff();
 
-    @Query("select  new  com.myproject.stuffexchange.model.StuffDetail(d.id,d.name,d.price,d.date,d.description)  from StuffProperty d where d.id = :id ")
+    @Query("select  new  com.myproject.stuffexchange.model.StuffDetail(d.id,d.name,d.price,d.currency,d.date,d.description)  from StuffProperty d where d.id = :id ")
     StuffDetail getStuffDetails(@Param("id") long id);
 
     StuffProperty getById(long id);

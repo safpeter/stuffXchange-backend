@@ -16,6 +16,8 @@ public class AllStuff {
 
     private double price;
 
+    private String currency;
+
     private long pictureId;
 
     private byte[] mainPicture;

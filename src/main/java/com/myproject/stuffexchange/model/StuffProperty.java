@@ -32,8 +32,8 @@ public class StuffProperty {
     @Column(columnDefinition = "text")
     private String description;
 
-    @ManyToOne
-    private User user;
+    @ManyToOne(cascade=CascadeType.ALL)
+    private AppUser user;
 
     private long mainPicture;
 

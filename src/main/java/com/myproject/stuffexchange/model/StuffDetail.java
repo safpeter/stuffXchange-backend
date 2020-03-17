@@ -22,6 +22,8 @@ public class StuffDetail {
 
     private double price;
 
+    private String currency;
+
     private LocalDate date;
 
     private String description;

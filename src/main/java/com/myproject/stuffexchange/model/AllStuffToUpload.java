@@ -19,5 +19,7 @@ public class AllStuffToUpload {
 
     private double price;
 
+    private String currency;
+
     private String mainPicture;
 }
