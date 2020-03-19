@@ -18,7 +18,10 @@ public class AllStuff {
 
     private String currency;
 
+    private AppUser user;
+
     private long pictureId;
 
     private byte[] mainPicture;
+
 }

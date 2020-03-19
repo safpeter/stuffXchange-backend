@@ -1,10 +1,7 @@
 package com.myproject.stuffexchange.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -32,7 +29,7 @@ public class StuffProperty {
     @Column(columnDefinition = "text")
     private String description;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne(cascade=CascadeType.PERSIST)
     private AppUser user;
 
     private long mainPicture;

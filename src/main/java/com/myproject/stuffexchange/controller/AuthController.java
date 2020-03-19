@@ -69,7 +69,6 @@ public class AuthController {
                     .email(email)
                     .build();
             userRepository.saveAndFlush(user);
-            System.out.println("TEEEE");
             return "You signed up successfully! Now you can log in with your new account!";
         }
     }
@@ -77,7 +76,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody UserCredentials credentials) {
         try {
-            System.out.println(credentials);
             String username = credentials.getUsername();
             String password = credentials.getPassword();
             // authenticationManager.authenticate calls loadUserByUsername in CustomUserDetailsService
@@ -86,13 +84,11 @@ public class AuthController {
                     .stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
-            System.out.println(roles);
 
             String token = jwtTokenServices.createToken(username, roles);
 
             Map<Object, Object> tokenMap = new HashMap<>();
             tokenMap.put("token", token);
-            System.out.println("TEEEE");
             return ResponseEntity.ok((tokenMap));
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username/password supplied");

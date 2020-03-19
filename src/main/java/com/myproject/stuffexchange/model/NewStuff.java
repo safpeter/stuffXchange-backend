@@ -20,4 +20,6 @@ public class NewStuff {
 
     private MultipartFile[] images;
 
+    private String username;
+
 }

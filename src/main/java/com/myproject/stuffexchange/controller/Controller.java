@@ -5,6 +5,7 @@ import com.myproject.stuffexchange.data.CountryAndCurrencyRepository;
 import com.myproject.stuffexchange.data.ImageRepository;
 import com.myproject.stuffexchange.data.StuffPropertyRepository;
 
+import com.myproject.stuffexchange.data.UserRepository;
 import com.myproject.stuffexchange.model.*;
 import com.myproject.stuffexchange.service.ImageTransformService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,22 +33,45 @@ public class Controller {
     @Autowired
     CountryAndCurrencyRepository countryAndCurrencyRepository;
 
-    @GetMapping(value = "/getallstuff")
-    public @ResponseBody List<AllStuffToUpload> getAllStuff() {
-        List<AllStuff> allStuffs =   stuffPropertyRepository.getAllStuff();
-        List<AllStuffToUpload> stuffToUpload = new ArrayList<>();
+    @Autowired
+    UserRepository userRepository;
+
+    @GetMapping(value = "/getalluserstuff/{username}")
+    public @ResponseBody List<AllStuffToUpload> getAllUserStuff(@PathVariable("username") String username) {
+        List<AllStuff> allStuffs =   stuffPropertyRepository.getAllUserStuff(username);
+        List<AllStuffToUpload> UserStuffToUpload = new ArrayList<>();
         for (AllStuff stuff : allStuffs) {
             AllStuffToUpload toUpload = AllStuffToUpload.builder()
                     .id(stuff.getId())
                     .name(stuff.getName())
                     .price(stuff.getPrice())
                     .currency(stuff.getCurrency())
+                    .user(stuff.getUser().getName())
                     .mainPicture(transformService.getBytesFromStuff(stuff))
                     .build();
 
-            stuffToUpload.add(toUpload);
+            UserStuffToUpload.add(toUpload);
         }
-        return stuffToUpload;
+        return UserStuffToUpload;
+    }
+
+    @GetMapping(value = "/getallfavouritestuff/{username}")
+    public @ResponseBody List<AllStuffToUpload> getAllFavouriteStuff(@PathVariable("username") String username) {
+       List<AllStuff> allStuffs =   stuffPropertyRepository.getAllFavouriteStuff(username);
+        List<AllStuffToUpload> favouriteStuffToUpload = new ArrayList<>();
+        for (AllStuff stuff : allStuffs) {
+            AllStuffToUpload toUpload = AllStuffToUpload.builder()
+                    .id(stuff.getId())
+                    .name(stuff.getName())
+                    .price(stuff.getPrice())
+                    .currency(stuff.getCurrency())
+                    .user(stuff.getUser().getName())
+                    .mainPicture(transformService.getBytesFromStuff(stuff))
+                    .build();
+
+            favouriteStuffToUpload.add(toUpload);
+        }
+        return favouriteStuffToUpload;
     }
 
 
@@ -55,9 +79,11 @@ public class Controller {
     public void uploadStuff(@ModelAttribute NewStuff newStuff) {
         List<Image> images = new ArrayList<>();
         List<byte[]> imagesInBytes  = transformService.transformImages(newStuff.getImages());
+        AppUser appUser = userRepository.getAppUserByName(newStuff.getUsername());
         StuffProperty stuff = StuffProperty.builder()
                 .name(newStuff.getName())
                 .date(LocalDate.now())
+                .user(appUser)
                 .price(newStuff.getPrice())
                 .currency(newStuff.getCurrency())
                 .description(newStuff.getDescription())
@@ -102,6 +128,22 @@ public class Controller {
     @GetMapping("/getcurrencies")
     public List<String> getAllCurrencies(){
         return countryAndCurrencyRepository.getAllCurrencyCode();
+    }
+
+    @GetMapping("/getuserdetails/{username}")
+    public AppUser getUserDetails(@PathVariable("username") String username){
+         AppUser user = userRepository.getAppUserByName(username);
+        System.out.println(user.toString());
+        System.out.println(username);
+         return user;
+    }
+
+    @DeleteMapping("/deletestuff/{id}")
+    public boolean deleteStuff(@PathVariable("id") long id) {
+        imageRepository.deleteImagesByStuffPropertyId(id);
+        stuffPropertyRepository.deleteStuffPropertyById(id);
+        System.out.println("teee");
+        return true;
     }
 
 

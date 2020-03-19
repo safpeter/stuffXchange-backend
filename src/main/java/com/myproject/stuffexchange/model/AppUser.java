@@ -35,7 +35,7 @@ public class AppUser {
 
     private LocalDate dateOfSignUp;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     public List<StuffProperty> stuffs;
 
     @Builder.Default

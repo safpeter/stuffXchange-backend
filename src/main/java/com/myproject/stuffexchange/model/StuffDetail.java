@@ -28,4 +28,6 @@ public class StuffDetail {
 
     private String description;
 
+    private AppUser user;
+
 }

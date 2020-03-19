@@ -22,4 +22,6 @@ public class AllStuffToUpload {
     private String currency;
 
     private String mainPicture;
+
+    private String user;
 }
