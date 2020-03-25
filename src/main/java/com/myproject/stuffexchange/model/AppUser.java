@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Builder
@@ -41,4 +42,7 @@ public class AppUser {
     @Builder.Default
     @ElementCollection
     private  List<String> roles = new ArrayList<>();
+
+    @ManyToMany(cascade =CascadeType.ALL)
+    private Set<StuffProperty> favouriteStuffs;
 }

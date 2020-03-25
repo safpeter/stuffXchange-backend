@@ -133,8 +133,6 @@ public class Controller {
     @GetMapping("/getuserdetails/{username}")
     public AppUser getUserDetails(@PathVariable("username") String username){
          AppUser user = userRepository.getAppUserByName(username);
-        System.out.println(user.toString());
-        System.out.println(username);
          return user;
     }
 
@@ -142,8 +140,26 @@ public class Controller {
     public boolean deleteStuff(@PathVariable("id") long id) {
         imageRepository.deleteImagesByStuffPropertyId(id);
         stuffPropertyRepository.deleteStuffPropertyById(id);
-        System.out.println("teee");
         return true;
+    }
+
+    @GetMapping("/getsearch/{search}")
+    public List<AllStuffToUpload> getSearches(@PathVariable("search") String search){
+        List<AllStuff> allStuffs = stuffPropertyRepository.searchStuff(search);
+        List<AllStuffToUpload> allStuffToUpload = new ArrayList<>();
+        for (AllStuff stuff : allStuffs) {
+           AllStuffToUpload stuffToUpload = AllStuffToUpload.builder()
+                    .id(stuff.getId())
+                    .name(stuff.getName())
+                    .price(stuff.getPrice())
+                    .currency(stuff.getCurrency())
+                    .mainPicture(transformService.getBytesFromStuff(stuff))
+                    .user(stuff.getUser().getName())
+                   .build();
+
+           allStuffToUpload.add(stuffToUpload);
+        }
+        return allStuffToUpload;
     }
 
 
