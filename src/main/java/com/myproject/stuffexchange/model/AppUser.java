@@ -34,6 +34,8 @@ public class AppUser {
 
     private double rating;
 
+    private  int numberOfRating;
+
     private LocalDate dateOfSignUp;
 
     @OneToMany(cascade = CascadeType.PERSIST)
@@ -43,6 +45,6 @@ public class AppUser {
     @ElementCollection
     private  List<String> roles = new ArrayList<>();
 
-    @ManyToMany(cascade =CascadeType.ALL)
+   @ManyToMany(cascade = CascadeType.ALL)
     private Set<StuffProperty> favouriteStuffs;
 }

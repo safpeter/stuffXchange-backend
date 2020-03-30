@@ -8,12 +8,16 @@ import com.myproject.stuffexchange.data.StuffPropertyRepository;
 import com.myproject.stuffexchange.data.UserRepository;
 import com.myproject.stuffexchange.model.*;
 import com.myproject.stuffexchange.service.ImageTransformService;
+import com.myproject.stuffexchange.service.RatingService;
+import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Slf4j
@@ -35,6 +39,9 @@ public class Controller {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RatingService ratingService;
 
     @GetMapping(value = "/getalluserstuff/{username}")
     public @ResponseBody List<AllStuffToUpload> getAllUserStuff(@PathVariable("username") String username) {
@@ -132,8 +139,8 @@ public class Controller {
 
     @GetMapping("/getuserdetails/{username}")
     public AppUser getUserDetails(@PathVariable("username") String username){
-         AppUser user = userRepository.getAppUserByName(username);
-         return user;
+        AppUser user = userRepository.getAppUserByName(username);
+        return user;
     }
 
     @DeleteMapping("/deletestuff/{id}")
@@ -161,6 +168,25 @@ public class Controller {
         }
         return allStuffToUpload;
     }
+
+    @PostMapping("/markasfavourite")
+    public boolean markAsFavourite(@RequestBody Favourite favourite){
+        AppUser user = userRepository.getAppUserByName(favourite.getUsername());
+        StuffProperty stuff = stuffPropertyRepository.getById(favourite.getStuffId());
+        Set<StuffProperty> stuffs = new HashSet<>();
+        stuffs.add(stuff);
+        user.setFavouriteStuffs(stuffs);
+        userRepository.saveAndFlush(user);
+        return  true;
+    }
+
+    @PostMapping("/rateuser")
+    public void rateUser(@RequestBody NewRating newRating){
+        System.out.println(newRating.getUserName());
+        System.out.println(newRating.getRating());
+        ratingService.calculateAverageRating(newRating.getUserName(), newRating.getRating() );
+    }
+
 
 
 }

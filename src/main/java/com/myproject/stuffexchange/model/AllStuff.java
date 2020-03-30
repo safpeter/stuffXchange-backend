@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AllStuff {
 
-
     private long id;
 
     private String name;

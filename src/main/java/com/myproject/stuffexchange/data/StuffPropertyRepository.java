@@ -35,4 +35,7 @@ public interface StuffPropertyRepository extends JpaRepository<StuffProperty,Lon
     @Query("select new com.myproject.stuffexchange.model.AllStuff(c.id, c.name,c.price,c.currency,c.user,c.mainPicture,i.image) " +
             "from StuffProperty c left JOIN Image i ON c.mainPicture=i.id where lower(c.name) like lower(concat('%',:search,'%'))")
     List<AllStuff> searchStuff(@Param("search") String search);
+
+//    @Query()
+//    List<StuffProperty>getFavourites(@Param("id") String id);
 }
