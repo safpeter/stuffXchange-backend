@@ -1,10 +1,14 @@
 package com.myproject.stuffexchange.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +16,8 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class StuffProperty {
 
     @Id
@@ -30,12 +35,20 @@ public class StuffProperty {
     @Column(columnDefinition = "text")
     private String description;
 
-    @ManyToOne(cascade=CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private AppUser user;
 
     private long mainPicture;
 
-    @OneToMany(cascade=CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Image> images;
+
+
+    @EqualsAndHashCode.Exclude
+    @JoinTable
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE},fetch = FetchType.LAZY)
+    private List<AppUser> users = new ArrayList<>();
+
 
 }

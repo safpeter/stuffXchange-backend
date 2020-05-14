@@ -9,15 +9,11 @@ import com.myproject.stuffexchange.data.UserRepository;
 import com.myproject.stuffexchange.model.*;
 import com.myproject.stuffexchange.service.ImageTransformService;
 import com.myproject.stuffexchange.service.RatingService;
-import lombok.Singular;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 @Slf4j
@@ -62,25 +58,30 @@ public class Controller {
         return UserStuffToUpload;
     }
 
-    @GetMapping(value = "/getallfavouritestuff/{username}")
-    public @ResponseBody List<AllStuffToUpload> getAllFavouriteStuff(@PathVariable("username") String username) {
-       List<AllStuff> allStuffs =   stuffPropertyRepository.getAllFavouriteStuff(username);
-        List<AllStuffToUpload> favouriteStuffToUpload = new ArrayList<>();
-        for (AllStuff stuff : allStuffs) {
-            AllStuffToUpload toUpload = AllStuffToUpload.builder()
-                    .id(stuff.getId())
-                    .name(stuff.getName())
-                    .price(stuff.getPrice())
-                    .currency(stuff.getCurrency())
-                    .user(stuff.getUser().getName())
-                    .mainPicture(transformService.getBytesFromStuff(stuff))
+    @GetMapping("/getallfavouritestuff/{username}")
+    public List<AllStuffToUpload> getFav(@PathVariable("username") String username){
+        AppUser user = userRepository.getAppUserByName(username);
+        List<StuffProperty> favouriteStuffs = user.getMyFavourites();
+        List<Long> favouriteStuffIds = new ArrayList<>();
+        for (StuffProperty favouriteStuff : favouriteStuffs) {
+            favouriteStuffIds.add(favouriteStuff.getId());
+        }
+        List<AllStuff> favourites  = stuffPropertyRepository.getFavouriteStuff(favouriteStuffIds);
+        List<AllStuffToUpload> favouritesToUpload = new ArrayList<>();
+        for (AllStuff favouriteStuff : favourites) {
+            AllStuffToUpload stuffToUpload = AllStuffToUpload.builder()
+                    .id(favouriteStuff.getId())
+                    .user(favouriteStuff.getUser().getName())
+                    .mainPicture(transformService.getBytesFromStuff(favouriteStuff))
+                    .price(favouriteStuff.getPrice())
+                    .currency(favouriteStuff.getCurrency())
+                    .name(favouriteStuff.getName())
                     .build();
 
-            favouriteStuffToUpload.add(toUpload);
+            favouritesToUpload.add(stuffToUpload);
         }
-        return favouriteStuffToUpload;
+        return favouritesToUpload;
     }
-
 
     @PostMapping(value = "/uploadstuff")
     public void uploadStuff(@ModelAttribute NewStuff newStuff) {
@@ -138,13 +139,12 @@ public class Controller {
     }
 
     @GetMapping("/getuserdetails/{username}")
-    public AppUser getUserDetails(@PathVariable("username") String username){
-        AppUser user = userRepository.getAppUserByName(username);
-        return user;
+    public AppUser getUserDetails(@PathVariable("username") String username) {
+        return userRepository.getAppUserByName(username);
     }
 
-    @DeleteMapping("/deletestuff/{id}")
-    public boolean deleteStuff(@PathVariable("id") long id) {
+    @DeleteMapping("/deletestuff/{id}/{username}")
+    public boolean deleteStuff(@PathVariable("id") long id,@PathVariable("username") String username) {
         imageRepository.deleteImagesByStuffPropertyId(id);
         stuffPropertyRepository.deleteStuffPropertyById(id);
         return true;
@@ -170,23 +170,37 @@ public class Controller {
     }
 
     @PostMapping("/markasfavourite")
-    public boolean markAsFavourite(@RequestBody Favourite favourite){
+    public void markAsFavourite(@RequestBody NewFavourite favourite){
         AppUser user = userRepository.getAppUserByName(favourite.getUsername());
-        StuffProperty stuff = stuffPropertyRepository.getById(favourite.getStuffId());
-        Set<StuffProperty> stuffs = new HashSet<>();
-        stuffs.add(stuff);
-        user.setFavouriteStuffs(stuffs);
+        StuffProperty stuffProperty = stuffPropertyRepository.getById(favourite.getStuffId());
+        List<StuffProperty> favouriteStuffs = user.getMyFavourites();
+        favouriteStuffs.add(stuffProperty);
+        user.setMyFavourites(favouriteStuffs);
         userRepository.saveAndFlush(user);
-        return  true;
     }
 
     @PostMapping("/rateuser")
     public void rateUser(@RequestBody NewRating newRating){
-        System.out.println(newRating.getUserName());
-        System.out.println(newRating.getRating());
-        ratingService.calculateAverageRating(newRating.getUserName(), newRating.getRating() );
+        ratingService.setRating(newRating.getRaterUserName(),newRating.getUserName(),newRating.getRating());
     }
 
+    @PutMapping("/updateprofile/{id}")
+    public AppUser updateProfile(@PathVariable("id") long id, @RequestBody NewUser newUser) {
+        System.out.println(newUser);
+        AppUser userToUpdate = userRepository.getAppUserById(id);
+        if(newUser.getName() != null   ){
+            userToUpdate.setName(newUser.getName());
+        }
+        if(newUser.getEmail() != null  ){
+            userToUpdate.setEmail(newUser.getEmail());
+        }
+        if(newUser.getCountry() != null ){
+            userToUpdate.setCountry(newUser.getCountry());
+        }
 
+        userRepository.saveAndFlush(userToUpdate);
+
+        return  userToUpdate;
+    }
 
 }

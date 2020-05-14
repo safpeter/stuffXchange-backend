@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NewRating {
 
+    private String raterUserName;
+
     private String userName;
 
     private double rating;

@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Favourite {
+public class NewFavourite {
+
+    private long stuffId;
 
     private String username;
 
-    private long stuffId;
 
 }

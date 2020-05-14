@@ -1,18 +1,20 @@
 package com.myproject.stuffexchange.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Builder
-@Data
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,6 +47,18 @@ public class AppUser {
     @ElementCollection
     private  List<String> roles = new ArrayList<>();
 
-   @ManyToMany(cascade = CascadeType.ALL)
-    private Set<StuffProperty> favouriteStuffs;
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @Singular
+    @ElementCollection
+    private Map<AppUser, Double> myRatings = new HashMap<>();
+
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @Singular
+    @JoinTable
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE},fetch = FetchType.LAZY)
+    private List<StuffProperty> myFavourites = new ArrayList<>();
+
 }
