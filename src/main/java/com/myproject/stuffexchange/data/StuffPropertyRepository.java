@@ -39,4 +39,8 @@ public interface StuffPropertyRepository extends JpaRepository<StuffProperty,Lon
             "from StuffProperty c left JOIN Image i ON c.mainPicture=i.id where c.id in :stuffs")
     List<AllStuff> getFavouriteStuff(@Param("stuffs") List<Long> stuffs);
 
+    @Query("select new com.myproject.stuffexchange.model.AllStuff(c.id, c.name,c.price,c.currency,c.user,c.mainPicture,i.image) " +
+            "from StuffProperty c left JOIN Image i ON c.mainPicture=i.id where c.user.name <> :username")
+    List<AllStuff> getPopularStuff(@Param("username") String username);
+
 }

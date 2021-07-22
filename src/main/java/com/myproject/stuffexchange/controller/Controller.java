@@ -203,4 +203,24 @@ public class Controller {
         return  userToUpdate;
     }
 
+    @GetMapping("/getpopularstuff/{username}")
+    public @ResponseBody List<AllStuffToUpload> getPopularStuff(@PathVariable("username") String username) {
+        List<AllStuff> allStuffs =   stuffPropertyRepository.getPopularStuff(username);
+        List<AllStuffToUpload> popularStuffs = new ArrayList<>();
+        for (AllStuff stuff : allStuffs) {
+            AllStuffToUpload toUpload = AllStuffToUpload.builder()
+                    .id(stuff.getId())
+                    .name(stuff.getName())
+                    .price(stuff.getPrice())
+                    .currency(stuff.getCurrency())
+                    .user(stuff.getUser().getName())
+                    .mainPicture(transformService.getBytesFromStuff(stuff))
+                    .build();
+            popularStuffs.add(toUpload);
+        }
+
+        return popularStuffs;
+    }
+
+
 }
