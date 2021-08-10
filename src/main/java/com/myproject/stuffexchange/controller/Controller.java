@@ -97,9 +97,9 @@ public class Controller {
                 .description(newStuff.getDescription())
                 .build();
 
-        for (int i = 0; i < imagesInBytes.size() ; i++) {
+        for (byte[] imagesInByte : imagesInBytes) {
             Image image = Image.builder()
-                    .image(imagesInBytes.get(i))
+                    .image(imagesInByte)
                     .stuffProperty(stuff)
                     .build();
             images.add(image);
@@ -221,6 +221,43 @@ public class Controller {
 
         return popularStuffs;
     }
+
+    @DeleteMapping("/deleteprofile/{id}")
+    public boolean deleteProfile(@PathVariable("id") long id){
+        userRepository.deleteById(id);
+        return userRepository.existsById(id);
+
+    }
+
+
+    @PutMapping("/updatestuff/{id}")
+    public void updateStuff(@PathVariable("id") long id, @ModelAttribute NewStuff newStuff) {
+        System.out.println(newStuff);
+        StuffProperty stuffToUpdate = stuffPropertyRepository.getById(id);
+            stuffToUpdate.setName(newStuff.getName());
+            stuffToUpdate.setCurrency(newStuff.getCurrency());
+            stuffToUpdate.setPrice(newStuff.getPrice());
+            stuffToUpdate.setDescription(newStuff.getDescription());
+
+        if( newStuff.getImages() != null) {
+            List<Image> images = new ArrayList<>();
+            List<byte[]> imagesInBytes = transformService.transformImages(newStuff.getImages());
+            for (byte[] imagesInByte : imagesInBytes) {
+                Image image = Image.builder()
+                        .image(imagesInByte)
+                        .stuffProperty(stuffToUpdate)
+                        .build();
+                images.add(image);
+
+                imageRepository.saveAll(images);
+                stuffToUpdate.setImages(images);
+            }
+        }
+
+        stuffPropertyRepository.saveAndFlush(stuffToUpdate);
+    }
+
+
 
 
 }
