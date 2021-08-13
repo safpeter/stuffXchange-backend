@@ -174,9 +174,14 @@ public class Controller {
         AppUser user = userRepository.getAppUserByName(favourite.getUsername());
         StuffProperty stuffProperty = stuffPropertyRepository.getById(favourite.getStuffId());
         List<StuffProperty> favouriteStuffs = user.getMyFavourites();
-        favouriteStuffs.add(stuffProperty);
+        if( favouriteStuffs.contains(stuffProperty)){
+            favouriteStuffs.remove(stuffProperty);
+        } else  {
+            favouriteStuffs.add(stuffProperty);
+        }
         user.setMyFavourites(favouriteStuffs);
         userRepository.saveAndFlush(user);
+
     }
 
     @PostMapping("/rateuser")
