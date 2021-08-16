@@ -1,11 +1,13 @@
 package com.myproject.stuffexchange.data;
 
 import com.myproject.stuffexchange.model.AppUser;
+import com.myproject.stuffexchange.model.StuffProperty;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<AppUser, Long> {
@@ -25,5 +27,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
     AppUser getAppUserByName(String name);
 
     AppUser getAppUserById(long id);
+
+    List<AppUser> getAppUsersByMyFavouritesId(long id);
 
 }

@@ -145,6 +145,12 @@ public class Controller {
 
     @DeleteMapping("/deletestuff/{id}/{username}")
     public boolean deleteStuff(@PathVariable("id") long id,@PathVariable("username") String username) {
+        List<AppUser> appUsers = userRepository.getAppUsersByMyFavouritesId(id);
+        StuffProperty stuffProperty = stuffPropertyRepository.getById(id);
+        for (AppUser appUser : appUsers) {
+            List<StuffProperty> favourites = appUser.getMyFavourites();
+            favourites.remove(stuffProperty);
+        }
         imageRepository.deleteImagesByStuffPropertyId(id);
         stuffPropertyRepository.deleteStuffPropertyById(id);
         return true;
@@ -191,7 +197,6 @@ public class Controller {
 
     @PutMapping("/updateprofile/{id}")
     public AppUser updateProfile(@PathVariable("id") long id, @RequestBody NewUser newUser) {
-        System.out.println(newUser);
         AppUser userToUpdate = userRepository.getAppUserById(id);
         if(newUser.getName() != null   ){
             userToUpdate.setName(newUser.getName());
@@ -237,7 +242,6 @@ public class Controller {
 
     @PutMapping("/updatestuff/{id}")
     public void updateStuff(@PathVariable("id") long id, @ModelAttribute NewStuff newStuff) {
-        System.out.println(newStuff);
         StuffProperty stuffToUpdate = stuffPropertyRepository.getById(id);
             stuffToUpdate.setName(newStuff.getName());
             stuffToUpdate.setCurrency(newStuff.getCurrency());
