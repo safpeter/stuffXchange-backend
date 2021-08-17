@@ -22,4 +22,5 @@ public class AllStuff {
 
     private byte[] mainPicture;
 
+
 }

@@ -11,6 +11,8 @@ import com.myproject.stuffexchange.service.ImageTransformService;
 import com.myproject.stuffexchange.service.RatingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -38,6 +40,12 @@ public class Controller {
 
     @Autowired
     RatingService ratingService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public Controller() {
+        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
 
     @GetMapping(value = "/getalluserstuff/{username}")
     public @ResponseBody List<AllStuffToUpload> getAllUserStuff(@PathVariable("username") String username) {
@@ -196,13 +204,24 @@ public class Controller {
     }
 
     @PutMapping("/updateprofile/{id}")
-    public AppUser updateProfile(@PathVariable("id") long id, @RequestBody NewUser newUser) {
+    public String updateProfile(@PathVariable("id") long id, @RequestBody NewUser newUser) {
         AppUser userToUpdate = userRepository.getAppUserById(id);
-        if(newUser.getName() != null   ){
+        if(newUser.getName() != null ){
+            if(userRepository.existsByName(newUser.getName())){
+                return "Wrong Name";
+            } else {
             userToUpdate.setName(newUser.getName());
+            }
+        }
+        if(newUser.getPassword() != null  ){
+            userToUpdate.setPassword(passwordEncoder.encode(newUser.getPassword()));
         }
         if(newUser.getEmail() != null  ){
-            userToUpdate.setEmail(newUser.getEmail());
+            if(userRepository.existsByEmail(newUser.getEmail())){
+                return "Wrong E-mail";
+            } else {
+                userToUpdate.setEmail(newUser.getEmail());
+            }
         }
         if(newUser.getCountry() != null ){
             userToUpdate.setCountry(newUser.getCountry());
@@ -210,7 +229,7 @@ public class Controller {
 
         userRepository.saveAndFlush(userToUpdate);
 
-        return  userToUpdate;
+        return  "Profile Updated";
     }
 
     @GetMapping("/getpopularstuff/{username}")
@@ -234,6 +253,13 @@ public class Controller {
 
     @DeleteMapping("/deleteprofile/{id}")
     public boolean deleteProfile(@PathVariable("id") long id){
+        AppUser appUser = userRepository.getAppUserById(id);
+        Map <AppUser, Double> ratings = appUser.getMyRatings();
+        List<StuffProperty> stuffs = appUser.getStuffs();
+        List<StuffProperty> myFavs = appUser.getMyFavourites();
+        myFavs.clear();
+        stuffs.clear();
+        ratings.remove(appUser);
         userRepository.deleteById(id);
         return userRepository.existsById(id);
 
