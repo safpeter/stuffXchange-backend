@@ -40,6 +40,7 @@ public class StuffProperty {
 
     private long mainPicture;
 
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<Image> images;
 

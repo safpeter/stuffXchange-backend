@@ -148,6 +148,7 @@ public class Controller {
 
     @GetMapping("/getuserdetails/{username}")
     public AppUser getUserDetails(@PathVariable("username") String username) {
+
         return userRepository.getAppUserByName(username);
     }
 
