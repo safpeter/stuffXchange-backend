@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -39,7 +40,6 @@ public class StuffProperty {
     private AppUser user;
 
     private long mainPicture;
-
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Image> images;

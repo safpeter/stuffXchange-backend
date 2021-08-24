@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Image {
     private StuffProperty stuffProperty;
 
     @Lob
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] image;
 
 
